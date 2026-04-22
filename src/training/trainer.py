@@ -56,6 +56,10 @@ class Trainer:
 
         self.criterion = nn.CrossEntropyLoss()
         self.lambda_sparsity = config["experiment"]["lambda_sparsity"]
+        self.target_mean_gate = config["experiment"].get("target_mean_gate", 0.2)
+        self.binarization_beta = config["experiment"].get(
+            "binarization_beta", 0.1
+        )
         self.num_epochs = config["training"]["num_epochs"]
         self.history = {
             "train_ce_loss": [],
@@ -93,11 +97,17 @@ class Trainer:
 
             logits = self.model(inputs)
             ce_loss = self.criterion(logits, targets)
-            sparsity_loss = compute_sparsity_loss(self.model)
+            sparsity_loss = compute_sparsity_loss(
+                self.model,
+                target_mean_gate=self.target_mean_gate,
+                binarization_beta=self.binarization_beta,
+            )
             batch_total_loss = compute_total_loss(
                 ce_loss,
                 self.model,
                 self.lambda_sparsity,
+                target_mean_gate=self.target_mean_gate,
+                binarization_beta=self.binarization_beta,
             )
 
             self.optimizer.zero_grad()
