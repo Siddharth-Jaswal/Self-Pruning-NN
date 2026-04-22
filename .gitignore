@@ -30,3 +30,7 @@ outputs/checkpoints/
 !outputs/plots/.gitkeep
 !outputs/logs/
 !outputs/logs/.gitkeep
+
+# Others
+.vscode
+workflow

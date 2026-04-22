@@ -1,7 +1,7 @@
 experiment:
   name: "spnn_low_lambda"
   seed: 42
-  lambda_sparsity: 1.0e-5
+  lambda_sparsity: 1.0e-6
 
 model:
   hidden_dims: [512, 256]

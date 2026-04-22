@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.losses.sparsity_loss import (
+    compute_mean_gate_value,
     compute_sparsity_loss,
     compute_sparsity_metric,
     compute_total_loss,
@@ -59,6 +60,7 @@ class Trainer:
         self.history = {
             "train_ce_loss": [],
             "train_sparsity_loss": [],
+            "train_mean_gate": [],
             "train_total_loss": [],
             "val_acc": [],
             "val_loss": [],
@@ -115,6 +117,7 @@ class Trainer:
             "ce_loss": total_ce_loss / num_batches,
             "sparsity_loss": total_sparsity_loss / num_batches,
             "total_loss": total_loss / num_batches,
+            "mean_gate": compute_mean_gate_value(self.model),
         }
 
     def validate(self) -> dict[str, float]:
@@ -160,6 +163,7 @@ class Trainer:
             self.history["train_sparsity_loss"].append(
                 train_metrics["sparsity_loss"]
             )
+            self.history["train_mean_gate"].append(train_metrics["mean_gate"])
             self.history["train_total_loss"].append(train_metrics["total_loss"])
             self.history["val_acc"].append(val_metrics["val_acc"])
             self.history["val_loss"].append(val_metrics["val_loss"])
@@ -182,11 +186,13 @@ class Trainer:
             self.logger.info(
                 (
                     "epoch=%s train_ce=%.4f train_sparsity=%.4f "
-                    "train_total=%.4f val_loss=%.4f val_acc=%.2f sparsity=%.2f"
+                    "mean_gate=%.4f train_total=%.4f val_loss=%.4f "
+                    "val_acc=%.2f sparsity=%.2f"
                 ),
                 epoch,
                 train_metrics["ce_loss"],
                 train_metrics["sparsity_loss"],
+                train_metrics["mean_gate"],
                 train_metrics["total_loss"],
                 val_metrics["val_loss"],
                 val_metrics["val_acc"],

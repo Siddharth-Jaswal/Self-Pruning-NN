@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+from PIL import Image
 import torch
 from torch.utils.data import Dataset
 
@@ -36,7 +37,8 @@ class FakeCIFAR10(Dataset):
     def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         """Return a deterministic CIFAR-like sample."""
         value = int((index / self.size) * 255)
-        image = np.full((32, 32, 3), fill_value=value, dtype=np.uint8)
+        image_array = np.full((32, 32, 3), fill_value=value, dtype=np.uint8)
+        image = Image.fromarray(image_array)
         label = index % 10
         if self.transform is not None:
             image = self.transform(image)

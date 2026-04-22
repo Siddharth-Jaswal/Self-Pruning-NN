@@ -11,24 +11,24 @@ DEFAULT_SPARSITY_THRESHOLD = 1e-2
 
 
 def compute_sparsity_loss(model: nn.Module) -> torch.Tensor:
-    """Compute the L1-style regularization term over all gate values.
+    """Compute the training-time L1-style regularization term over gate values.
 
     Args:
         model: Model containing one or more ``PrunableLinear`` layers.
 
     Returns:
-        Tensor equal to the sum of all sigmoid gate values across the model.
+        Tensor equal to the sum of all gate values across prunable parameters.
     """
     first_parameter = next(model.parameters(), None)
     if first_parameter is None:
         raise ValueError("Model must contain at least one parameter.")
 
-    total = torch.zeros((), device=first_parameter.device)
+    total_gate_sum = torch.zeros((), device=first_parameter.device)
     for module in model.modules():
         if isinstance(module, PrunableLinear):
             gates = torch.sigmoid(module.gate_scores)
-            total = total + gates.sum()
-    return total
+            total_gate_sum = total_gate_sum + gates.sum()
+    return total_gate_sum
 
 
 def compute_total_loss(
@@ -75,3 +75,27 @@ def compute_sparsity_metric(
     if total_gates == 0:
         return 0.0
     return (pruned_gates / total_gates) * 100.0
+
+
+def compute_mean_gate_value(model: nn.Module) -> float:
+    """Compute the mean gate value across all prunable parameters.
+
+    Args:
+        model: Model containing prunable layers.
+
+    Returns:
+        Mean sigmoid gate value across the whole model.
+    """
+    total_gate_value = 0.0
+    total_gates = 0
+
+    with torch.no_grad():
+        for module in model.modules():
+            if isinstance(module, PrunableLinear):
+                gates = torch.sigmoid(module.gate_scores)
+                total_gate_value += gates.sum().item()
+                total_gates += gates.numel()
+
+    if total_gates == 0:
+        return 0.0
+    return total_gate_value / total_gates
