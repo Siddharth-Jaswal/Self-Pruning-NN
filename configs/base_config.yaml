@@ -1,0 +1,30 @@
+experiment:
+  name: "spnn_base"
+  seed: 42
+  lambda_sparsity: 1.0e-3
+
+model:
+  hidden_dims: [512, 256]
+  num_classes: 10
+  dropout_rate: 0.3
+
+training:
+  num_epochs: 50
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-4
+  optimizer: "adam"
+
+data:
+  root: "./data"
+  batch_size: 128
+  num_workers: 4
+  val_split: 0.1
+  pin_memory: true
+
+evaluation:
+  sparsity_threshold: 1.0e-2
+
+output:
+  checkpoint_dir: "./outputs/checkpoints"
+  plots_dir: "./outputs/plots"
+  logs_dir: "./outputs/logs"
