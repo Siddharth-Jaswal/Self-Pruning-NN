@@ -1,9 +1,7 @@
 experiment:
   name: "spnn_medium_lambda"
   seed: 42
-  lambda_sparsity: 1.0e-4
-  target_mean_gate: 0.08
-  binarization_beta: 0.3
+  lambda_sparsity: 2.5e-2
 
 model:
   hidden_dims: [512, 256]
