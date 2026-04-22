@@ -1,0 +1,9 @@
+{
+  "experiment_name": "spnn_medium_lambda",
+  "lambda": 0.0465,
+  "test_acc": 52.05,
+  "test_loss": 1.371148091328295,
+  "sparsity_pct": 88.2113992649265,
+  "total_params": 1706496,
+  "pruned_params": 1505324
+}
